@@ -12,17 +12,17 @@ import org.springframework.http.ResponseEntity;
 
 class SubmersibletrackerApplicationTests {
 
-	@Mock
+    @Mock
     private SubmersibletrackerController controller;
 
-	@Mock
-	private Submersible submersible;
+    @Mock
+    private Submersible submersible;
 
     @BeforeEach
     public void setUp() {
-		submersible = new Submersible("Submersible", 0, 0);
-		controller = new SubmersibletrackerController(submersible);
-		
+        submersible = new Submersible("Submersible", 0, 0);
+        controller = new SubmersibletrackerController(submersible);
+
     }
 
     @AfterEach
@@ -30,10 +30,10 @@ class SubmersibletrackerApplicationTests {
         controller = null;
     }
 
-    @Test   
+    @Test
     public void testMoveLeft() {
-		submersible = new Submersible("Submersible", 0, 0);
-        ResponseEntity<Submersible> response = controller.moveLeft(Arrays.asList(1,0));
+        submersible = new Submersible("Submersible", 0, 0);
+        ResponseEntity<Submersible> response = controller.moveLeft(Arrays.asList(1, 0));
         assertTrue(response.getStatusCode().is2xxSuccessful());
         assertEquals(-1, response.getBody().getX());
         assertEquals(0, response.getBody().getY());
@@ -41,8 +41,8 @@ class SubmersibletrackerApplicationTests {
 
     @Test
     public void testMoveRight() {
-		submersible = new Submersible("Submersible", 0, 0);
-        ResponseEntity<Submersible> response = controller.moveRight(Arrays.asList(1,0));
+        submersible = new Submersible("Submersible", 0, 0);
+        ResponseEntity<Submersible> response = controller.moveRight(Arrays.asList(1, 0));
         assertTrue(response.getStatusCode().is2xxSuccessful());
         assertEquals(1, response.getBody().getX());
         assertEquals(0, response.getBody().getY());
@@ -50,8 +50,8 @@ class SubmersibletrackerApplicationTests {
 
     @Test
     public void testMoveUp() {
-		submersible = new Submersible("Submersible", 0, 0);
-        ResponseEntity<Submersible> response = controller.moveUp(Arrays.asList(0,1));
+        submersible = new Submersible("Submersible", 0, 0);
+        ResponseEntity<Submersible> response = controller.moveUp(Arrays.asList(1));
         assertTrue(response.getStatusCode().is2xxSuccessful());
         assertEquals(0, response.getBody().getX());
         assertEquals(1, response.getBody().getY());
@@ -59,17 +59,10 @@ class SubmersibletrackerApplicationTests {
 
     @Test
     public void testMoveDown() {
-		submersible = new Submersible("Submersible", 0, 0);
-        ResponseEntity<Submersible> response = controller.moveDown(Arrays.asList(0,1));
+        submersible = new Submersible("Submersible", 0, 0);
+        ResponseEntity<Submersible> response = controller.moveDown(Arrays.asList(1));
         assertTrue(response.getStatusCode().is2xxSuccessful());
-        assertEquals(0, response.getBody().getX()); 
-        assertEquals(-1, response.getBody().getY());    
+        assertEquals(0, response.getBody().getX());
+        assertEquals(-1, response.getBody().getY());
     }
-
-   /*  @Test
-    public void testSetObstacles() {
-        controller.setObstacles(Arrays.asList(Arrays.asList()));
-        assertNotEquals(1, submersible.getX());
-        assertNotEquals(2, submersible.getY());
-    } */
 }
