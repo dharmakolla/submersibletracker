@@ -101,7 +101,11 @@ public class SubmersibletrackerController {
 
     @GetMapping("/obstacles")
     public ResponseEntity<List<List<Integer>>> getObstacles() {
-        return ResponseEntity.ok(submersible.getObstacles());
+        List<List<Integer>> obstacles = new ArrayList<>();
+        for (List<Integer> obstacle : submersible.getObstacles()) {
+            obstacles.add(Arrays.asList(obstacle.get(0), obstacle.get(1)));
+        }
+        return ResponseEntity.ok(obstacles);
     }
 
     @GetMapping("/position")
@@ -147,15 +151,23 @@ public class SubmersibletrackerController {
         return ResponseEntity.ok(this.submersible);
     }
 
-    @PostMapping("/setObstacles")
-    public ResponseEntity<Void> setObstacles(@RequestBody List<List<Integer>> obstacles) {
+    @PostMapping("/obstacles")
+    public ResponseEntity<List<List<Integer>>> setObstacles(@RequestBody List<List<Integer>> obstacles) {
         this.submersible.setObstacles(obstacles);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(this.submersible.getObstacles());
     }
 
     @GetMapping("/printTripSummary")
     public ResponseEntity<String> printTripSummary() {
         return ResponseEntity.ok(this.submersible.printTripSummary());
+    }
+
+    public List<List<Integer>> setObstacles() {
+        List<List<Integer>> obstacles = new ArrayList<>();
+        for(int i=0; i<10; i++) {
+            obstacles.add(Arrays.asList((int)(Math.random()*100), (int)(Math.random()*100)));   
+        }
+        return obstacles;
     }
 
     public static void main(String[] args) {

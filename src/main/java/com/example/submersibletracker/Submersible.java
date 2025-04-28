@@ -113,6 +113,7 @@ public class Submersible {
     public String printTripSummary() {
         return "Trip Summary:  \n" +
                "\t\tStart Position: (" + this.x + ", " + this.y + ")\n" +
+               "\t\tObstacles: " + this.getObstacles() + "\n" +
                "\t\tPath: " + this.getPathAsString();
     }
 }
