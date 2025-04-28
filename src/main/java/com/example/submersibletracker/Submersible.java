@@ -109,6 +109,11 @@ public class Submersible {
         this.path.add(Arrays.asList(x, y));
         return this.path;
     }
-    
+
+    public String printTripSummary() {
+        return "Trip Summary:  \n" +
+               "\t\tStart Position: (" + this.x + ", " + this.y + ")\n" +
+               "\t\tPath: " + this.getPathAsString();
+    }
 }
 

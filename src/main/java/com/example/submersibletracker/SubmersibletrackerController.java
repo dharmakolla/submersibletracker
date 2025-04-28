@@ -2,7 +2,6 @@ package com.example.submersibletracker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.submersibletracker.config.MovesEnum;
 
 @RestController
 @RequestMapping("/submersible")
@@ -26,7 +27,7 @@ public class SubmersibletrackerController {
     }
 
     @PostMapping("/commands")
-    public ResponseEntity<List<List<Integer>>> executeCommands(@RequestBody List<String> commands) {
+    public ResponseEntity<String> executeCommands(@RequestBody List<String> commands) {
         List<List<Integer>> path = new ArrayList<>();
         try {
             for (String command : commands) {
@@ -38,42 +39,59 @@ public class SubmersibletrackerController {
                 String direction = parts[0].toUpperCase();
                 int distance = Integer.parseInt(parts[1]);
 
-                switch (direction) {
-                    case "LEFT":
+                switch (MovesEnum.valueOf(direction)) {
+                    case START:
+                        submersible = this.start(Integer.parseInt(parts[1]),Integer.parseInt(parts[2])).getBody();
+                        if (submersible != null) {
+                            submersible.setPath(submersible.getX(), submersible.getY());
+                            path.add(Arrays.asList(submersible.getX(), submersible.getY())); // Add current position instead
+                        }
+                        break;
+                    case LEFT:
                         submersible = this.moveLeft(Arrays.asList(distance)).getBody();
                         if (submersible != null) {
-                            path.add(Arrays.asList(submersible.getX(), submersible.getY())); // Add current position instead
+                            submersible.setPath(submersible.getX(), submersible.getY());
+                            path.add(Arrays.asList(submersible.getX(), submersible.getY())); 
                         }
                         break;
-                    case "RIGHT":
+                    case RIGHT:
                         submersible = this.moveRight(Arrays.asList(distance)).getBody();
                         if (submersible != null) {
-                            path.add(Arrays.asList(submersible.getX(), submersible.getY())); // Add current position instead
+                            submersible.setPath(submersible.getX(), submersible.getY());
+                            path.add(Arrays.asList(submersible.getX(), submersible.getY()));
                         }
                         break;
-                    case "UP":
+                    case UP:
                         submersible = this.moveUp(Arrays.asList(distance)).getBody();
                         if (submersible != null) {
-                            path.add(Arrays.asList(submersible.getX(), submersible.getY())); // Add current position instead
+                            submersible.setPath(submersible.getX(), submersible.getY());
+                            path.add(Arrays.asList(submersible.getX(), submersible.getY()));
                         }
                         break;
-                    case "DOWN":
+                    case DOWN:
                         submersible = this.moveDown(Arrays.asList(distance)).getBody();
                         if (submersible != null) {
-                            path.add(Arrays.asList(submersible.getX(), submersible.getY())); // Add current position instead
+                            submersible.setPath(submersible.getX(), submersible.getY());
+                            path.add(Arrays.asList(submersible.getX(), submersible.getY())); 
+                        }
+                        break;
+                    case STAY:
+                        submersible = this.move(Arrays.asList(0,0)).getBody();
+                        if (submersible != null) {
+                            submersible.setPath(submersible.getX(), submersible.getY());
+                            path.add(Arrays.asList(submersible.getX(), submersible.getY())); 
                         }
                         break;
                     default:
                         throw new IllegalArgumentException("Unknown direction: " + direction);
                 }
             }
-
-            return ResponseEntity.ok(path);
+            return ResponseEntity.ok(this.printTripSummary().getBody());
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body(Collections.emptyList());
         }
+        return ResponseEntity.ok(this.printTripSummary().getBody());
     }
 
     @GetMapping("/path")    
@@ -91,16 +109,18 @@ public class SubmersibletrackerController {
         return ResponseEntity.ok(Arrays.asList(this.submersible.getX(), this.submersible.getY()));
     }
 
-    @GetMapping("/name")
-    public ResponseEntity<String> getName() {
-        return ResponseEntity.ok(this.submersible.getName());
+    @PostMapping("/start")
+    public ResponseEntity<Submersible> start(int dx,int dy) {
+        this.submersible = new Submersible();
+        this.submersible.setPath(dx, dy);
+        return ResponseEntity.ok(this.submersible);
     }
 
     @PostMapping("/move")
-    public ResponseEntity<Void> move(@RequestBody List<Integer> position) {
+    public ResponseEntity<Submersible> move(@RequestBody List<Integer> position) {
         this.submersible.move(position.get(0), position.get(1));
         this.submersible.setPath(position.get(0), position.get(1));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(this.submersible);
     }
 
     @PostMapping("/moveLeft")
@@ -131,6 +151,11 @@ public class SubmersibletrackerController {
     public ResponseEntity<Void> setObstacles(@RequestBody List<List<Integer>> obstacles) {
         this.submersible.setObstacles(obstacles);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/printTripSummary")
+    public ResponseEntity<String> printTripSummary() {
+        return ResponseEntity.ok(this.submersible.printTripSummary());
     }
 
     public static void main(String[] args) {
